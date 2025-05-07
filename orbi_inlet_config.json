@@ -1,0 +1,1 @@
+{"cpc_port": "None", "mbed_port": "None", "daq_device": "None", "valve_port": "None", "alicat_port": "None", "valve_state": "A", "particle_sizes": [30.0, 50.0, 100.0], "sheath_flow": 14.0, "save_interval": 1, "switch_interval": 600, "settle_delay": 5, "corona_voltage": 4500.0, "corona_enabled": false}
