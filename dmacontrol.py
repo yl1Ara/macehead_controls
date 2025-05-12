@@ -232,8 +232,19 @@ def measurement_loop():
     dropbox = r'C:/Users/Thermo/Dropbox/logfiles'
     os.makedirs(log_dir, exist_ok=True)
     os.makedirs(dropbox, exist_ok=True)
-    filename = os.path.join(log_dir, 'orbi_inlet_' + datetime.datetime.now().strftime('%Y%m%d_%H%M')+'.csv')
-    dropfile = os.path.join(dropbox, 'orbi_inlet_' + datetime.datetime.now().strftime('%Y%m%d_%H%M')+'.csv')
+
+    current_date = datetime.datetime.now().date()
+
+    def get_log_filenames():
+        timestamp = datetime.datetime.now().strftime('%Y%m%d')
+        return (
+            os.path.join(log_dir, f'orbi_inlet_{timestamp}.csv'),
+            os.path.join(dropbox, f'orbi_inlet_{timestamp}.csv')
+        )
+    
+    filename, dropfile = get_log_filenames()
+
+
     print(os.path.abspath(filename))
     cpc_port = cpc_box.get()
     mbed_port = mbed_box.get()
@@ -257,9 +268,10 @@ def measurement_loop():
 
     with local, drop:
         writer1 = csv.writer(local)
-        writer1.writerow(["Local Time", "Measurement", "Size (nm)", "Voltage (V)", "Sheath Flow", "Flowmeter Flow", "Corona HV (V)"])
+        header=["Local Time", "CPC data", "Size (nm)", "Voltage (V)", "Sheath Flow", "Corona HV (V)", "CPC makeup flow response", "VIA makeup flow response"]
+        writer1.writerow(header)
         writer2 = csv.writer(drop)
-        writer2.writerow(["Local Time", "Measurement", "Size (nm)", "Voltage (V)", "Sheath Flow", "Flowmeter Flow", "Corona HV (V)"])
+        writer2.writerow(header)
 
         if use_sequence_mode and sequence_steps:
             steps = sequence_steps
@@ -276,6 +288,22 @@ def measurement_loop():
 
         while running:
             for step in steps:
+
+                new_date = datetime.datetime.now().date()
+
+                if new_date != current_date:
+                    current_date = new_date
+                    local.close()
+                    drop.close()
+                    filename, dropfile = get_log_filenames()
+                    local = open(filename, 'w', newline='')
+                    drop = open(dropfile, 'w', newline='')
+                    writer1 = csv.writer(local)
+                    writer2 = csv.writer(drop)
+                    writer1.writerow(header)
+                    writer2.writerow(header)
+                    terminal.insert(tk.END, f"[Logger] Switched to new log file: {filename}\n")
+
                 if not running:
                     break
 
@@ -294,8 +322,8 @@ def measurement_loop():
                         toggle_valve(valve_box.get(), valve_toggle_btn)
 
                     # Apply MFC setpoints
-                    set_alicat_flow(alicat_box.get(), alicat_a, 'A')
-                    set_alicat_flow(alicat_box.get(), alicat_b, 'B')
+                    alicat_a_response = set_alicat_flow(alicat_box.get(), alicat_a, 'A')
+                    alicat_b_response = set_alicat_flow(alicat_box.get(), alicat_b, 'B')
 
                     # Apply corona
                     corona_toggle_var.set(corona == 1)
@@ -331,7 +359,7 @@ def measurement_loop():
                         row = [loc_dt.strftime(fmt), line1, dp, voltage, sh_read, sh_read, corona_log_voltage]
                         writer1.writerow(row)
                         writer2.writerow(row)
-                        terminal.insert(tk.END, f"{loc_dt.strftime(fmt)}, {line1}, {dp}, {voltage:.5f}, {sh_read}, {corona_log_voltage:.1f} \n")
+                        terminal.insert(tk.END, f"{loc_dt.strftime(fmt)}, {line1}, {dp}, {voltage:.5f}, {sh_read}, {corona_log_voltage:.1f}, {alicat_a_response}, {alicat_b_response} \n")
                         terminal.see(tk.END)
                         time.sleep(save_interval)
                 except Exception as e:
@@ -462,6 +490,7 @@ def set_alicat_flow(port, flow, device):
                 alicat_serial.write(command.encode("utf-8"))
                 response = alicat_serial.read_until(new_line).decode('utf-8').strip()
                 terminal.insert(tk.END, f"[Alicat {device}] Set to {flow:.3f} sLPM | Response: {response}\n")
+                return response
         else:
             terminal.insert(tk.END, f"[Alicat {device}] No COM port selected.\n")
     except Exception as e:
