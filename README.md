@@ -1,4 +1,4 @@
-#Daily diary
+# Daily diary
 
 ![Criticality Plot](diaries/criticality_plot.png)
 
