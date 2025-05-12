@@ -99,7 +99,8 @@ def save_config(cpc_port, mbed_port, daq_device, valve_port, state):
 
 def load_sequence_file():
     global sequence_steps, use_sequence_mode
-    file_path = filedialog.askopenfilename(filetypes=[("CSV Files", "*.csv")])
+    ini_dir = os.path.join(os.path.dirname(__file__), 'sequences')
+    file_path = filedialog.askopenfilename(initialdir=ini_dir, filetypes=[("CSV Files", "*.csv")])
     if file_path:
         with open(file_path, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
@@ -108,6 +109,14 @@ def load_sequence_file():
         terminal.insert(tk.END, f"[Sequence] Loaded {len(sequence_steps)} steps from {file_path}\n")
     else:
         use_sequence_mode = False
+
+def manualmode():
+    stop_measurement()
+    terminal.insert(tk.END, "[Measurement] Stopped.\n")
+    global use_sequence_mode
+    use_sequence_mode = False
+    terminal.insert(tk.END, "[Manual Mode] Sequence mode disabled.\n")
+    
 
 def update_sizes():
     global particle_sizes, sheath_flow, save_interval, switch_interval, settle_delay
@@ -481,6 +490,7 @@ Button(left_frame, text="Start Measurement", command=start_measurement, bootstyl
 Button(left_frame, text="Stop", command=stop_measurement, bootstyle=DANGER).pack(pady=5)
 Button(left_frame, text="Save Configuration", command=lambda: save_config(cpc_box.get(), mbed_box.get(), daq_box.get(), valve_box.get(), valve_state), bootstyle=SECONDARY).pack(pady=5)
 Button(left_frame, text="Load Sequence CSV", command=load_sequence_file, bootstyle=INFO).pack(pady=5)
+Button(left_frame, text="manual mode", command = manualmode, bootstyle = INFO).pack(pady=5)
 
 
 Label(left_frame, text="Alicat A Setpoint (sccm):").pack()
