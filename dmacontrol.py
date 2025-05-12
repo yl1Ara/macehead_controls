@@ -27,7 +27,7 @@ switch_interval = 600
 settle_delay = 5
 valve_state = "A"
 
-loc_tz = pytz.timezone('Etc/GMT-2')
+loc_tz = pytz.timezone('Etc/GMT-0')
 utc_tz = pytz.timezone('UTC')
 fmt = '%Y %m %d %H %M %S %z'
 new_line = '\n'.encode('UTF-8')
@@ -228,7 +228,13 @@ def start_measurement():
 def measurement_loop():
     global running, ser, ser_mbed
     running = True
-    filename = 'orbi_inlet_' + datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + '.csv'
+    log_dir = 'logfiles'
+    dropbox = r'C:/Users/Thermo/Dropbox/logfiles'
+    os.makedirs(log_dir, exist_ok=True)
+    os.makedirs(dropbox, exist_ok=True)
+    filename = os.path.join(log_dir, 'orbi_inlet_' + datetime.datetime.now().strftime('%Y%m%d_%H%M')+'.csv')
+    dropfile = os.path.join(dropbox, 'orbi_inlet_' + datetime.datetime.now().strftime('%Y%m%d_%H%M')+'.csv')
+    print(os.path.abspath(filename))
     cpc_port = cpc_box.get()
     mbed_port = mbed_box.get()
     daq_device = daq_box.get()
@@ -246,9 +252,14 @@ def measurement_loop():
         except serial.SerialException as e:
             terminal.insert(tk.END, f"[MBED Error] {e}\n")
 
-    with open(filename, 'w', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerow(["Local Time", "Measurement", "Size (nm)", "Voltage (V)", "Sheath Flow", "Flowmeter Flow", "Corona HV (V)"])
+    local = open(filename, 'w', newline='')
+    drop = open(dropfile, 'w', newline='')
+
+    with local, drop:
+        writer1 = csv.writer(local)
+        writer1.writerow(["Local Time", "Measurement", "Size (nm)", "Voltage (V)", "Sheath Flow", "Flowmeter Flow", "Corona HV (V)"])
+        writer2 = csv.writer(drop)
+        writer2.writerow(["Local Time", "Measurement", "Size (nm)", "Voltage (V)", "Sheath Flow", "Flowmeter Flow", "Corona HV (V)"])
 
         if use_sequence_mode and sequence_steps:
             steps = sequence_steps
@@ -263,66 +274,68 @@ def measurement_loop():
                 "Corona (0=Off/1=On)": int(corona_toggle_var.get())
             } for dp in particle_sizes]
 
-        for step in steps:
-            if not running:
-                break
+        while running:
+            for step in steps:
+                if not running:
+                    break
 
-            try:
-                duration = float(step["Step Duration (s)"])
-                delay = float(step["Delay Before Measure (s)"])
-                dp = float(step["DMA Particle Size (nm)"])
-                alicat_a = float(step["Alicat A (sLPM)"])
-                alicat_b = float(step["Alicat B (sLPM)"])
-                valve = int(step["Valve (A=0/B=1)"])
-                corona = int(step["Corona (0=Off/1=On)"])
+                try:
+                    duration = float(step["Step Duration (s)"])
+                    delay = float(step["Delay Before Measure (s)"])
+                    dp = float(step["DMA Particle Size (nm)"])
+                    alicat_a = float(step["Alicat A (sLPM)"])
+                    alicat_b = float(step["Alicat B (sLPM)"])
+                    valve = int(step["Valve (A=0/B=1)"])
+                    corona = int(step["Corona (0=Off/1=On)"])
 
-                # Apply valve state
-                target_valve = "A" if valve == 0 else "B"
-                if valve_state != target_valve:
-                    toggle_valve(valve_box.get(), valve_toggle_btn)
+                    # Apply valve state
+                    target_valve = "A" if valve == 0 else "B"
+                    if valve_state != target_valve:
+                        toggle_valve(valve_box.get(), valve_toggle_btn)
 
-                # Apply MFC setpoints
-                set_alicat_flow(alicat_box.get(), alicat_a, 'A')
-                set_alicat_flow(alicat_box.get(), alicat_b, 'B')
+                    # Apply MFC setpoints
+                    set_alicat_flow(alicat_box.get(), alicat_a, 'A')
+                    set_alicat_flow(alicat_box.get(), alicat_b, 'B')
 
-                # Apply corona
-                corona_toggle_var.set(corona == 1)
-                toggle_corona_voltage(daq_box.get(), not corona)
+                    # Apply corona
+                    corona_toggle_var.set(corona == 1)
+                    toggle_corona_voltage(daq_box.get(), not corona)
 
-                # Set DMA voltage
-                voltage = voltage_from_size(dp)
-                set_daq_voltage(daq_device, voltage)
-                terminal.insert(tk.END, f"[Step] Set DMA {dp} nm \u2192 {voltage:.2f} V\n")
-                time.sleep(delay)
+                    # Set DMA voltage
+                    voltage = voltage_from_size(dp)
+                    set_daq_voltage(daq_device, voltage)
+                    terminal.insert(tk.END, f"[Step] Set DMA {dp} nm \u2192 {voltage:.2f} V\n")
+                    time.sleep(delay)
 
-                start_time = time.time()
-                while time.time() - start_time < duration and running:
-                    sh_read = "offline"
-                    if ser_mbed:
-                        try:
-                            out = 'read sh_flow\r\n'
-                            ser_mbed.write(out.encode('utf-8'))
-                            sh_read = ser_mbed.read_until(new_line).decode('utf-8').strip()
-                        except Exception as e: 
-                            terminal.insert(tk.END, f"[MBED Error] {e}\n")
+                    start_time = time.time()
+                    while time.time() - start_time < duration and running:
+                        sh_read = "offline"
+                        if ser_mbed:
+                            try:
+                                out = 'read sh_flow\r\n'
+                                ser_mbed.write(out.encode('utf-8'))
+                                sh_read = ser_mbed.read_until(new_line).decode('utf-8').strip()
+                            except Exception as e: 
+                                terminal.insert(tk.END, f"[MBED Error] {e}\n")
 
-                    line1 = "offline"
-                    if ser:
-                        try:
-                            ser.write(b':MEAS:OPC')
-                            line1 = ser.read_until(new_line).decode('utf-8').strip().replace(',', ' ').replace(':MEAS:OPC', '')
-                        except:
-                            pass
+                        line1 = "offline"
+                        if ser:
+                            try:
+                                ser.write(':MEAS:OPC\r'.encode('utf-8'))
+                                line1 = ser.read_until(new_line).decode('utf-8').strip().replace(',', ' ').replace(':MEAS:OPC', '')
+                            except:
+                                pass
 
-                    loc_dt = utc_tz.localize(datetime.datetime.utcnow()).astimezone(loc_tz)
-                    corona_log_voltage = float(corona_voltage_entry.get()) if corona_toggle_var.get() else 0.0
-                    row = [loc_dt.strftime(fmt), line1, dp, voltage, sh_read, sh_read, corona_log_voltage]
-                    writer.writerow(row)
-                    terminal.insert(tk.END, f"{loc_dt.strftime(fmt)}, {line1}, {dp}, {voltage:.5f}, {sh_read}, {sh_read}, {corona_log_voltage:.1f} \n")
-                    terminal.see(tk.END)
-                    time.sleep(save_interval)
-            except Exception as e:
-                terminal.insert(tk.END, f"[Step Error] {e}\n")
+                        loc_dt = utc_tz.localize(datetime.datetime.utcnow()).astimezone(loc_tz)
+                        corona_log_voltage = float(corona_voltage_entry.get()) if corona_toggle_var.get() else 0.0
+                        row = [loc_dt.strftime(fmt), line1, dp, voltage, sh_read, sh_read, corona_log_voltage]
+                        writer1.writerow(row)
+                        writer2.writerow(row)
+                        terminal.insert(tk.END, f"{loc_dt.strftime(fmt)}, {line1}, {dp}, {voltage:.5f}, {sh_read}, {corona_log_voltage:.1f} \n")
+                        terminal.see(tk.END)
+                        time.sleep(save_interval)
+                except Exception as e:
+                    terminal.insert(tk.END, f"[Step Error] {e}\n")
 
 def stop_measurement():
     global running

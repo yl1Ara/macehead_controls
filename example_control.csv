@@ -1,3 +1,6 @@
 Step Duration (s),Delay Before Measure (s),DMA Particle Size (nm),Alicat A (sLPM),Alicat B (sLPM),Valve (A=0/B=1),Corona (0=Off/1=On)
-5,0,30,0.5,13.5,0,1
-5,0,100,1,13,1,0
+1200,0,0,0.6,17,0,1
+60,0,0,0.6,17,0,0
+600,0,30,0.6,17,0,1
+600,0,50,0.6,17,0,1
+600,0,100,0.6,17,0,1
