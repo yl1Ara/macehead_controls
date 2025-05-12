@@ -8,10 +8,21 @@ import tkinter as tk
 import json
 import os
 import csv
+import shutil
 from ttkbootstrap import Style
 from ttkbootstrap.constants import *
 from ttkbootstrap.widgets import Combobox, Button, Label, Frame, Entry
 from tkinter import filedialog
+
+
+def copy_to_dropbox_periodically(local_path, dropbox_path, interval=3600):
+    while running:
+        try:
+            shutil.copy(local_path, dropbox_path)
+            terminal.insert(tk.END, f"[Dropbox Sync] Copied to {dropbox_path}\n")
+        except Exception as e:
+            terminal.insert(tk.END, f"[Dropbox Sync Error] {e}\n")
+        time.sleep(interval)
 
 try:
     import nidaqmx
@@ -32,6 +43,8 @@ utc_tz = pytz.timezone('UTC')
 fmt = '%Y %m %d %H %M %S %z'
 new_line = '\n'.encode('UTF-8')
 
+filename = None
+dropfile = None
 running = False
 ser = None
 ser_mbed = None
@@ -225,6 +238,8 @@ def set_daq_voltage(device_name, voltage):
 def start_measurement():
     threading.Thread(target=measurement_loop, daemon=True).start()
 
+import shutil
+
 def measurement_loop():
     global running, ser, ser_mbed
     running = True
@@ -242,7 +257,15 @@ def measurement_loop():
             os.path.join(dropbox, f'orbi_inlet_{timestamp}.csv')
         )
     
+    global filename, dropfile
+    
     filename, dropfile = get_log_filenames()
+
+    threading.Thread(
+    target=copy_to_dropbox_periodically,
+    args=(filename, dropfile, 3600),  # Every hour (3600 seconds)
+    daemon=True
+    ).start()
 
 
     print(os.path.abspath(filename))
@@ -366,12 +389,20 @@ def measurement_loop():
                     terminal.insert(tk.END, f"[Step Error] {e}\n")
 
 def stop_measurement():
+    global filename, dropfile
     global running
     running = False
+    if os.path.exists(filename):
+        try:
+            shutil.copy(filename, dropfile)
+            terminal.insert(tk.END, f"[Dropbox Sync] Final copy to Dropbox complete.\n")
+        except Exception as e:
+            terminal.insert(tk.END, f"[Dropbox Final Copy Error] {e}\n")
     if ser_mbed and ser_mbed.is_open:
         ser_mbed.close()
     if ser and ser.is_open:
         ser.close()
+    
 
 def on_closing():
     stop_measurement()
