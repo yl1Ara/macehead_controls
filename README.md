@@ -1,3 +1,8 @@
+#Daily diary
+
+![Criticality Plot](diaries/criticality_plot.png)
+
+
 # Program
 By running the run.bat a tkinter GUI should open up. If you use the sequence csv here are the steps to do it:
 1. Select the correct COM ports for the devices.
@@ -21,26 +26,4 @@ The install.bat should guide you and make it easy but idk how to install all so 
 2. The NI daq card needs a driver to run it with python script. The install.bat should send you to NI website where you need to login and install the driver. If it doesn't send you there either it has worked or use this link [NI-daqmx driver](https://www.ni.com/en/support/downloads/drivers/download.ni-daq-mx.html#565026)
 
 
-   
-#define VALVE_PIN 6  // Use GPIO6 (if allowed)
-
-void setup() {
-  Serial.begin(9600);
-  pinMode(VALVE_PIN, OUTPUT);
-  digitalWrite(VALVE_PIN, LOW); // Default state: Valve A open, B closed
-}
-
-void loop() {
-  if (Serial.available()) {
-    char command = Serial.read();
-
-    if (command == 'A') {
-      digitalWrite(VALVE_PIN, HIGH);  // Valve A closed, B open
-      Serial.println("Valve A selected (HIGH)");
-    } 
-    else if (command == 'B') {
-      digitalWrite(VALVE_PIN, LOW);   // Valve A open, B closed
-      Serial.println("Valve B selected (LOW)");
-    }
-  }
-}
+ 
