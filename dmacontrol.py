@@ -15,11 +15,13 @@ from ttkbootstrap.widgets import Combobox, Button, Label, Frame, Entry
 from tkinter import filedialog
 
 
-def copy_to_dropbox_periodically(local_path, dropbox_path, interval=3600):
+def copy_to_dropbox_periodically(sync_info, interval=3600):
+    """Continuously copies current log file to Dropbox every `interval` seconds."""
     while running:
         try:
-            shutil.copy(local_path, dropbox_path)
-            terminal.insert(tk.END, f"[Dropbox Sync] Copied to {dropbox_path}\n")
+            if sync_info["local"] and os.path.exists(sync_info["local"]):
+                shutil.copy(sync_info["local"], sync_info["dropbox"])
+                terminal.insert(tk.END, f"[Dropbox Sync] Copied to {sync_info['dropbox']}\n")
         except Exception as e:
             terminal.insert(tk.END, f"[Dropbox Sync Error] {e}\n")
         time.sleep(interval)
@@ -45,6 +47,7 @@ new_line = '\n'.encode('UTF-8')
 
 filename = None
 dropfile = None
+dropbox_sync_info = {"local": None, "dropbox": None}
 running = False
 ser = None
 ser_mbed = None
@@ -238,17 +241,13 @@ def set_daq_voltage(device_name, voltage):
 def start_measurement():
     threading.Thread(target=measurement_loop, daemon=True).start()
 
-import shutil
-
 def measurement_loop():
-    global running, ser, ser_mbed
+    global running, ser, ser_mbed, filename, dropfile, dropbox_sync_info
     running = True
     log_dir = 'logfiles'
     dropbox = r'C:/Users/Thermo/Dropbox/logfiles'
     os.makedirs(log_dir, exist_ok=True)
     os.makedirs(dropbox, exist_ok=True)
-
-    current_date = datetime.datetime.now().date()
 
     def get_log_filenames():
         timestamp = datetime.datetime.now().strftime('%Y%m%d')
@@ -256,22 +255,25 @@ def measurement_loop():
             os.path.join(log_dir, f'orbi_inlet_{timestamp}.csv'),
             os.path.join(dropbox, f'orbi_inlet_{timestamp}.csv')
         )
-    
-    global filename, dropfile
-    
-    filename, dropfile = get_log_filenames()
 
+    filename, dropfile = get_log_filenames()
+    dropbox_sync_info["local"] = filename
+    dropbox_sync_info["dropbox"] = dropfile
+
+    # Start a single persistent Dropbox thread
     threading.Thread(
-    target=copy_to_dropbox_periodically,
-    args=(filename, dropfile, 3600),  # Every hour (3600 seconds)
-    daemon=True
+        target=copy_to_dropbox_periodically,
+        args=(dropbox_sync_info, 3600),
+        daemon=True
     ).start()
 
-
+    current_date = datetime.datetime.now().date()
     print(os.path.abspath(filename))
+
     cpc_port = cpc_box.get()
     mbed_port = mbed_box.get()
     daq_device = daq_box.get()
+
     ser = None
     ser_mbed = None
 
@@ -291,15 +293,13 @@ def measurement_loop():
 
     with local, drop:
         writer1 = csv.writer(local)
-        header=["Local Time", "CPC data", "Size (nm)", "Voltage (V)", "Sheath Flow", "Corona HV (V)", "CPC makeup flow response", "VIA makeup flow response"]
-        writer1.writerow(header)
         writer2 = csv.writer(drop)
+        header = ["Local Time", "CPC data", "Size (nm)", "Voltage (V)", "Sheath Flow", "Corona HV (V)", "CPC makeup flow response", "VIA makeup flow response"]
+        writer1.writerow(header)
         writer2.writerow(header)
 
-        if use_sequence_mode and sequence_steps:
-            steps = sequence_steps
-        else:
-            steps = [{
+        steps = sequence_steps if use_sequence_mode and sequence_steps else [
+            {
                 "Step Duration (s)": switch_interval,
                 "Delay Before Measure (s)": settle_delay,
                 "DMA Particle Size (nm)": dp,
@@ -307,18 +307,21 @@ def measurement_loop():
                 "Alicat B (sLPM)": sheath_flow,
                 "Valve (A=0/B=1)": 0 if valve_state == "A" else 1,
                 "Corona (0=Off/1=On)": int(corona_toggle_var.get())
-            } for dp in particle_sizes]
+            }
+            for dp in particle_sizes
+        ]
 
         while running:
             for step in steps:
-
+                # Rotate logs at midnight
                 new_date = datetime.datetime.now().date()
-
                 if new_date != current_date:
                     current_date = new_date
                     local.close()
                     drop.close()
                     filename, dropfile = get_log_filenames()
+                    dropbox_sync_info["local"] = filename
+                    dropbox_sync_info["dropbox"] = dropfile
                     local = open(filename, 'w', newline='', encoding='utf-8')
                     drop = open(dropfile, 'w', newline='', encoding='utf-8')
                     writer1 = csv.writer(local)
@@ -339,23 +342,17 @@ def measurement_loop():
                     valve = int(step["Valve (A=0/B=1)"])
                     corona = int(step["Corona (0=Off/1=On)"])
 
-                    # Apply valve state
+                    # Apply settings
                     target_valve = "A" if valve == 0 else "B"
                     if valve_state != target_valve:
                         toggle_valve(valve_box.get(), valve_toggle_btn)
-
-                    # Apply MFC setpoints
                     alicat_a_response = set_alicat_flow(alicat_box.get(), alicat_a, 'A')
                     alicat_b_response = set_alicat_flow(alicat_box.get(), alicat_b, 'B')
-
-                    # Apply corona
                     corona_toggle_var.set(corona == 1)
                     toggle_corona_voltage(daq_box.get(), not corona)
-
-                    # Set DMA voltage
                     voltage = voltage_from_size(dp)
                     set_daq_voltage(daq_device, voltage)
-                    terminal.insert(tk.END, f"[Step] Set DMA {dp} nm \u2192 {voltage:.2f} V\n")
+                    terminal.insert(tk.END, f"[Step] Set DMA {dp} nm → {voltage:.2f} V\n")
                     time.sleep(delay)
 
                     start_time = time.time()
@@ -363,26 +360,25 @@ def measurement_loop():
                         sh_read = "offline"
                         if ser_mbed:
                             try:
-                                out = 'read sh_flow\r\n'
-                                ser_mbed.write(out.encode('utf-8'))
+                                ser_mbed.write(b'read sh_flow\r\n')
                                 sh_read = ser_mbed.read_until(new_line).decode('utf-8').strip()
-                            except Exception as e: 
+                            except Exception as e:
                                 terminal.insert(tk.END, f"[MBED Error] {e}\n")
 
                         line1 = "offline"
                         if ser:
                             try:
-                                ser.write(':MEAS:OPC\r'.encode('utf-8'))
+                                ser.write(b':MEAS:OPC\r')
                                 line1 = ser.read_until(new_line).decode('utf-8').strip().replace(',', ' ').replace(':MEAS:OPC', '')
                             except:
                                 pass
 
                         loc_dt = utc_tz.localize(datetime.datetime.utcnow()).astimezone(loc_tz)
                         corona_log_voltage = float(corona_voltage_entry.get()) if corona_toggle_var.get() else 0.0
-                        row = [loc_dt.strftime(fmt), line1, dp, voltage, sh_read, sh_read, corona_log_voltage]
+                        row = [loc_dt.strftime(fmt), line1, dp, voltage, sh_read, corona_log_voltage, alicat_a_response, alicat_b_response]
                         writer1.writerow(row)
                         writer2.writerow(row)
-                        terminal.insert(tk.END, f"{loc_dt.strftime(fmt)}, {line1}, {dp}, {voltage:.5f}, {sh_read}, {corona_log_voltage:.1f}, {alicat_a_response}, {alicat_b_response} \n")
+                        terminal.insert(tk.END, f"{', '.join(map(str, row))}\n")
                         terminal.see(tk.END)
                         time.sleep(save_interval)
                 except Exception as e:
