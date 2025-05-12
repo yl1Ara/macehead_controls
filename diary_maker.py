@@ -13,7 +13,6 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 canvas = None
-
 root = tk.Tk()
 root.columnconfigure(0, weight=1)
 root.rowconfigure(7, weight=1)
@@ -120,33 +119,6 @@ def save_note():
 
     plot_bar_chart(heatmap_frame)
 
-def plot_heatmap(frame):
-    global canvas
-
-    if canvas is not None:
-        canvas.get_tk_widget().destroy()
-        canvas = None
-
-    plot_path = "diaries/plot.csv"
-    if os.path.exists(plot_path):
-        df = pd.read_csv(plot_path, index_col=0)
-    else:
-        df = pd.DataFrame(columns=[str(i) for i in range(11)])
-    
-    df = df.fillna(0)
-    df = df[[str(i) for i in range(11) if str(i) in df.columns]]
-    df = df.astype(int)
-
-    fig, ax = plt.subplots(figsize=(8, 3)) 
-    sns.heatmap(df, annot=True, fmt='d', cmap='coolwarm', cbar=True, ax=ax)
-    ax.set_title("Criticality Heatmap")
-    ax.set_xlabel("Criticality Level")
-    ax.set_ylabel("Date")
-    fig.tight_layout()
-    canvas = FigureCanvasTkAgg(fig, master=frame)
-    canvas.draw()
-    canvas.get_tk_widget().pack()
-
 def plot_bar_chart(frame):
     global canvas
 
@@ -215,6 +187,11 @@ def plot_bar_chart(frame):
     outer_canvas.configure(scrollregion=outer_canvas.bbox("all"))
 
     outer_canvas.config(width=800)
+
+    fig.savefig("diaries/criticality_plot.png", bbox_inches="tight")
+    
+
+
 
 
 heatmap_frame = ttk.Frame(root)
