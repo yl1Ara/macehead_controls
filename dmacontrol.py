@@ -263,8 +263,8 @@ def measurement_loop():
         except serial.SerialException as e:
             terminal.insert(tk.END, f"[MBED Error] {e}\n")
 
-    local = open(filename, 'w', newline='')
-    drop = open(dropfile, 'w', newline='')
+    local = open(filename, 'w', newline='', encoding='utf-8')
+    drop = open(dropfile, 'w', newline='', encoding='utf-8')
 
     with local, drop:
         writer1 = csv.writer(local)
@@ -296,8 +296,8 @@ def measurement_loop():
                     local.close()
                     drop.close()
                     filename, dropfile = get_log_filenames()
-                    local = open(filename, 'w', newline='')
-                    drop = open(dropfile, 'w', newline='')
+                    local = open(filename, 'w', newline='', encoding='utf-8')
+                    drop = open(dropfile, 'w', newline='', encoding='utf-8')
                     writer1 = csv.writer(local)
                     writer2 = csv.writer(drop)
                     writer1.writerow(header)
