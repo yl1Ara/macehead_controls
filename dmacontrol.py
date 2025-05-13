@@ -297,15 +297,19 @@ def measurement_loop():
         except serial.SerialException as e:
             terminal.insert(tk.END, f"[MBED Error] {e}\n")
 
-    local = open(filename, 'w', newline='', encoding='utf-8')
-    drop = open(dropfile, 'w', newline='', encoding='utf-8')
+    file_exists = os.path.exists(filename)
+    local = open(filename, 'a', newline='', encoding='utf-8')
+    drop = open(dropfile, 'a', newline='', encoding='utf-8')
 
-    with local, drop:
-        writer1 = csv.writer(local)
-        writer2 = csv.writer(drop)
+    writer1 = csv.writer(local)
+    writer2 = csv.writer(drop)
+
+    if not file_exists:
         header = ["Local Time", "CPC data", "Size (nm)", "Voltage (V)", "Sheath Flow", "Corona HV (V)", "CPC makeup flow response", "VIA makeup flow response"]
         writer1.writerow(header)
         writer2.writerow(header)
+
+    with local, drop:
 
         steps = sequence_steps if use_sequence_mode and sequence_steps else [
             {
@@ -331,8 +335,8 @@ def measurement_loop():
                     filename, dropfile = get_log_filenames()
                     dropbox_sync_info["local"] = filename
                     dropbox_sync_info["dropbox"] = dropfile
-                    local = open(filename, 'w', newline='', encoding='utf-8')
-                    drop = open(dropfile, 'w', newline='', encoding='utf-8')
+                    local = open(filename, 'a', newline='', encoding='utf-8')
+                    drop = open(dropfile, 'a', newline='', encoding='utf-8')
                     writer1 = csv.writer(local)
                     writer2 = csv.writer(drop)
                     writer1.writerow(header)
