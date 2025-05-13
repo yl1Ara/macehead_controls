@@ -250,6 +250,23 @@ def set_daq_voltage(device_name, voltage):
 def start_measurement():
     threading.Thread(target=measurement_loop, daemon=True).start()
 
+def read_alicat_data(port, device='A'):
+    try:
+        if port != "None":
+            with serial.Serial(port, 19200, timeout=1) as alicat_serial:
+                alicat_serial.write(f"{device}\r".encode("utf-8"))
+                response = alicat_serial.read_until(new_line).decode('utf-8').strip()
+                terminal.insert(tk.END, f"[Alicat {device} Read] Response: {response}\n")
+                parts = response.split()
+                if len(parts) >= 6:
+                    return float(parts[3])  # sLPM flow rate
+                return None
+        else:
+            terminal.insert(tk.END, f"[Alicat {device}] No COM port selected.\n")
+    except Exception as e:
+        terminal.insert(tk.END, f"[Alicat {device} Read Error] {e}\n")
+        return None
+
 def measurement_loop():
     global running, ser, ser_mbed, filename, dropfile, dropbox_sync_info
     running = True
@@ -388,6 +405,8 @@ def measurement_loop():
 
                         loc_dt = utc_tz.localize(datetime.datetime.utcnow()).astimezone(loc_tz)
                         corona_log_voltage = float(corona_voltage_entry.get()) if corona_toggle_var.get() else 0.0
+                        alicat_a_response = read_alicat_data(alicat_box.get(), 'A')
+                        alicat_b_response = read_alicat_data(alicat_box.get(), 'B')
                         row = [loc_dt.strftime(fmt), line1, dp, voltage, sh_read, corona_log_voltage, alicat_a_response, alicat_b_response]
                         writer1.writerow(row)
                         writer2.writerow(row)
