@@ -1,6 +1,0 @@
-08:03, set VIA makeup to 0
-08:07, start urea gas
-08:17, test nitrate gas
-08:19, start urea gas; tune file: 20241218_MION_Positive_100us_50-750
-08:54, Starting gasline_control.csv sequence
-08:55, computer time is accurate

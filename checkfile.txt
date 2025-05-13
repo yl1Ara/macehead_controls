@@ -1,0 +1,18 @@
+daily:
+- check TeamViewer is running ok
+- check CPC butanol
+- check nitric acid level
+- check nitrogen bottle pressure
+- check inlet lines cleanlines (outside and inside)
+- check VIA control box (bottom temperature 240C)
+    remote:
+    - orbi check TIC (1.5e7<<2.5e7 around 2e7)
+    - orbi TIC variation <3%
+    - orbi check 61 and 121 are dominant
+    - CPC check the concentration difference between corona on/off
+    - DMA check that you can see steps in CPC during size selection
+    - DMA check sheath flow recordings
+
+
+
+- once in 2 weeks autodrain CPC
