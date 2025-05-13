@@ -1,0 +1,18 @@
+During reboot of the computer there might come an issue that you don't have internet or the orbi doesn't communicate.
+This is because the default setting of computers is trying to get internet trough ethernet cable. So you need to set it otherwise:
+
+1. go to "control panel"
+2. "Network and Sharing"
+3. on the left side you should see "Change adapter settings"
+4. Right click on Wi-fi and open "properties"
+5. find "internet protocol version 4 (TCP/IPv4)" option in the list and click it once and open "properties".
+6. "Advanced..."
+10. if you don't have internet:
+    10.1. Uncheck the "Automatic metric" option
+    10.2. Insert "1" to the "Interface metric" entry
+    10.3. "ok" out of the windows
+    10.4. Check connection to internet and orbi
+11. No orbi connection: Reboot or ...
+    11.1. click the "Automatic metric" option on.
+    11.2. check if the orbi connection is now ok. Might need a reboot.
+    11.3. Check if internet is ok and if not go to step 10.

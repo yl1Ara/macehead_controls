@@ -6,6 +6,7 @@ import pytz
 import threading
 import tkinter as tk
 import json
+import pandas as pd
 import os
 import csv
 import shutil
@@ -105,8 +106,10 @@ def load_sequence_file():
         with open(file_path, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
             sequence_steps = [row for row in reader]
+            df = pd.read_csv(file_path)
         use_sequence_mode = True
         terminal.insert(tk.END, f"[Sequence] Loaded {len(sequence_steps)} steps from {file_path}\n")
+        terminal.insert(tk.END, df)
     else:
         use_sequence_mode = False
 
@@ -408,9 +411,10 @@ def measurement_loop():
                         alicat_a_response = read_alicat_data(alicat_box.get(), 'A')
                         alicat_b_response = read_alicat_data(alicat_box.get(), 'B')
                         row = [loc_dt.strftime(fmt), line1, dp, voltage, sh_read, corona_log_voltage, alicat_a_response, alicat_b_response]
+                        terminalrow= [loc_dt.strftime(fmt), line1, dp, voltage, sh_read, corona_log_voltage]
                         writer1.writerow(row)
                         writer2.writerow(row)
-                        terminal.insert(tk.END, f"{', '.join(map(str, row))}\n")
+                        terminal.insert(tk.END, f"{', '.join(map(str, terminalrow))}\n")
                         terminal.see(tk.END)
                         time.sleep(save_interval)
                 except Exception as e:

@@ -1,0 +1,17 @@
+Step-by-step guide to change the sampling lines manually
+
+gas -> Particle
+1. Set MFC B to 17lpm (manually or in dmacontrol.py)
+2. Check that the MFC A is around 0.6lpm. (0<<1.2 usually)
+3. Open particle line Valve
+4. Check CPC status (Is anything red)
+    4.1. If it's red abort. Close the valve and disconnect CPC inlet
+5. Close gas line valve
+
+particle -> gas
+1. Open gas line valve
+2. Check that the MFC A is around 0.6lpm. (0<<1.2 usually)
+3. Close the particle line valve
+4. Check CPC status (Is anything red)
+    4.1. If it's red abort. disconnect CPC
+5. Set MFC B to 0 lpm 

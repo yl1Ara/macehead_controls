@@ -1,0 +1,10 @@
+After a reboot there might be a chance that the MOXI adapter resets back to rs-232 communication settings when it should be rs-485 2w.
+
+1. Go to "Device Manager"
+2. fully open up "Multi-port serial adapters"
+    2.1. If you don't see this then check the connection of the mfc cable.
+3. Right-click on "UPort 1150" and open "Properties"
+4. Go to "Ports Configuration" tab
+5. "Port Setting"
+6. Change the Interface to "RS-485 2W"
+7. "OK"
