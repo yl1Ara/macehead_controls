@@ -1,8 +1,3 @@
-# Daily diary
-
-![Criticality Plot](diaries/criticality_plot.png)
-
-
 # Program
 By running the run.bat a tkinter GUI should open up. If you use the sequence csv here are the steps to do it:
 1. Select the correct COM ports for the devices.
