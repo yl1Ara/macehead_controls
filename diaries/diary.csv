@@ -17,3 +17,15 @@ Time,Note
 2025-05-13 12:16:25,[Inlet] Code update2. sequence restart
 2025-05-13 13:47:51,[Inlet] Code update3. sequence restart
 2025-05-13 13:59:03,[Inlet] started gasline_inletcorona.csv sequence
+2025-05-13 15:25:11,[CPC] Making a vacuum line for CPC
+2025-05-13 15:25:20,[CPC] Turning of CPC
+2025-05-13 15:25:40,[CPC] Disconnecting inlet
+2025-05-13 15:25:57,[CPC] Turning off the pump
+2025-05-13 15:28:54,[CPC] Turning on the pump
+2025-05-13 15:30:12,[CPC] Turning CPC on
+2025-05-13 15:33:36,[Inlet] Sequence restarted after CPC drain vacuum installed
+2025-05-13 15:33:56,[CPC] Heating back up
+2025-05-13 15:36:04,[Inlet] gasline_inletcorona_test.csv changed. step duration 30->100. empty duration 960->400
+2025-05-13 15:36:14,[Inlet] restarting sequence
+2025-05-13 15:37:19,[CPC] Heated up and working
+2025-05-13 17:11:38,[Inlet] code update. sequence restart

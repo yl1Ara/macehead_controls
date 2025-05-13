@@ -260,10 +260,7 @@ def read_alicat_data(port, device='A'):
                 alicat_serial.write(f"{device}\r".encode("utf-8"))
                 response = alicat_serial.read_until(new_line).decode('utf-8').strip()
                 terminal.insert(tk.END, f"[Alicat {device} Read] Response: {response}\n")
-                parts = response.split()
-                if len(parts) >= 6:
-                    return float(parts[3])  # sLPM flow rate
-                return None
+                return response
         else:
             terminal.insert(tk.END, f"[Alicat {device}] No COM port selected.\n")
     except Exception as e:
