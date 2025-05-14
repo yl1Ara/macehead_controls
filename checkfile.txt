@@ -1,9 +1,11 @@
 daily:
 - check TeamViewer is running ok
 - check CPC butanol
+- check CPC status. (On cpc go to "status" tab and check is anything red? go to "set" tab and check that avg time=1s, sat temp = 39C and con temp=15C )
 - check nitric acid level
 - check nitrogen bottle pressure
 - check inlet lines cleanlines (outside and inside)
+- check that valves are never both closed at sametime
 - check VIA control box (bottom temperature 240C)
     remote:
     - orbi check TIC (1.5e7<<2.5e7 around 2e7)
@@ -14,5 +16,5 @@ daily:
     - DMA check sheath flow recordings
 
 
-
+    
 - once in 2 weeks autodrain CPC

@@ -320,7 +320,8 @@ def measurement_loop():
 
     writer1 = csv.writer(local)
     writer2 = csv.writer(drop)
-
+    header = ["Local Time", "CPC data", "Size (nm)", "Voltage (V)", "Sheath Flow", "Corona HV (V)", "CPC makeup flow response", "VIA makeup flow response"]
+        
     if not file_exists:
         header = ["Local Time", "CPC data", "Size (nm)", "Voltage (V)", "Sheath Flow", "Corona HV (V)", "CPC makeup flow response", "VIA makeup flow response"]
         writer1.writerow(header)
@@ -347,6 +348,7 @@ def measurement_loop():
                 new_date = datetime.datetime.now().date()
                 if new_date != current_date:
                     current_date = new_date
+                    header = ["Local Time", "CPC data", "Size (nm)", "Voltage (V)", "Sheath Flow", "Corona HV (V)", "CPC makeup flow response", "VIA makeup flow response"]
                     local.close()
                     drop.close()
                     filename, dropfile = get_log_filenames()

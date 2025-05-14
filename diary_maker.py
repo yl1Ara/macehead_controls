@@ -49,10 +49,7 @@ machine.insert(0, 'Maintenance')
 
 machine['values'] = ['ORBI','Inlet','CPC','DMA','Maintenance','Other']
 
-
 Button(root, text="Save Note", command=lambda: save_note()).grid(row=6, column=0, padx=10, pady=10)
-
-
 
 def update_time():
     if not root.winfo_exists():
@@ -80,13 +77,10 @@ def save_note():
 
     os.makedirs("diaries", exist_ok=True)
 
-
     if os.path.exists(filename):
         df = pd.read_csv(filename)
     else:
         df = pd.DataFrame(columns=["Time", "Note"])
-
-    
 
     note = f'[{machine.get()}] {note}'
 
@@ -105,21 +99,6 @@ def save_note():
     df = df.sort_values(by="Time")
     df.to_csv(dropbox, index=False)
     print(f"Note saved to {dropbox}")
-
-
-
-
-    
-
-    
-
-
-heatmap_frame = ttk.Frame(root)
-heatmap_frame.grid(row=7, column=0, columnspan=10, padx=10, pady=10)
-
-heatmap_frame.columnconfigure(0, weight=1)
-heatmap_frame.rowconfigure(0, weight=1)
-
 
 update_time()
 root.mainloop()
