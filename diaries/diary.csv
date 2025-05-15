@@ -59,4 +59,22 @@ Time,Note
 2025-05-14 21:45:18,[ORBI] MION inlet back in
 2025-05-14 21:45:42,[Inlet] Sequence started
 2025-05-14 21:46:18,[ORBI] MION back to 20lpm
-2025-05-14 21:51:28,[ORBI] code update. restarting sequence
+2025-05-14 21:51:28,[Inlet] code update. restarting sequence
+2025-05-15 07:57:16,[Inlet] Inlet ok
+2025-05-15 07:57:37,[Maintenance] TeamViewer ok
+2025-05-15 07:58:45,[Maintenance] CPC butanol level 9.5
+2025-05-15 07:58:59,[Maintenance] CPC status ok
+2025-05-15 07:59:26,[Maintenance] nitric acid level 2.7
+2025-05-15 07:59:54,[Maintenance] nitrogen bottle pressure 180bar
+2025-05-15 08:00:10,[Maintenance] inlet lines clean
+2025-05-15 08:00:21,[Maintenance] Valves ok
+2025-05-15 08:00:32,[Maintenance] VIA control box ok
+2025-05-15 08:00:52,[Maintenance] Orbi TIC 22.57e6
+2025-05-15 08:01:00,[Maintenance] Orbi TIC  var 5
+2025-05-15 08:01:17,[Maintenance] Orbi 61 and 121 ok
+2025-05-15 08:01:27,[Maintenance] Corona ok
+2025-05-15 08:01:33,[Maintenance] DMA ok
+2025-05-15 08:01:50,[Maintenance] DMA sheath ok
+2025-05-15 08:05:11,[Maintenance] beginning valvetest.csv
+2025-05-15 08:09:02,[Maintenance] Valve test ok
+2025-05-15 08:09:35,[Inlet] gasline_inletcorona_test.csv started

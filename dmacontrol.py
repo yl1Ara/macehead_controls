@@ -185,7 +185,7 @@ def toggle_corona_voltage(device_name, current_state):
 def toggle_valve(port, button):
     global valve_state
     try:
-        with tenma(port) as tenma:
+        with Tenma722535(port) as tenma:
             if port != "None":
                 if valve_state == "A":
                     tenma.set_voltage(8)

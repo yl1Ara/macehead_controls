@@ -1,6 +1,6 @@
 daily:
 - check TeamViewer is running ok
-- check CPC butanol
+- check CPC butanol level
 - check CPC status. (On cpc go to "status" tab and check is anything red? go to "set" tab and check that avg time=1s, sat temp = 39C and con temp=15C )
 - check nitric acid level
 - check nitrogen bottle pressure
