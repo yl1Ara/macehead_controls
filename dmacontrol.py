@@ -225,7 +225,9 @@ def voltage_from_size(dp):
         y0, y1 = hvs[i - 1], hvs[i]
         hv = y0 + (dp - x0) * (y1 - y0) / (x1 - x0)
 
-    analog = hv / 500  # Convert HV to 0–10V analog signal (5kV source)
+    analog = hv / 500 
+    if dp == 0:
+        return 0.0
     return max(0.0, min(10.0, analog))
 
 def set_sheath_flow_mbed():
