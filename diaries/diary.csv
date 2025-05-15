@@ -29,3 +29,34 @@ Time,Note
 2025-05-13 15:36:14,[Inlet] restarting sequence
 2025-05-13 15:37:19,[CPC] Heated up and working
 2025-05-13 17:11:38,[Inlet] code update. sequence restart
+2025-05-13 21:02:39,[ORBI] stop and restart acquisition to manage file size
+2025-05-14 08:38:51,[ORBI] rechanges to dmacontrol.py. restarted sequence.
+2025-05-14 08:43:02,[Maintenance] butanol level 9.9cm
+2025-05-14 08:45:12,[Maintenance] nitric acid level 2.7
+2025-05-14 08:45:45,[Maintenance] nitrogen bottle pressure 185 bar
+2025-05-14 08:48:05,[Maintenance] TeamViewer ok
+2025-05-14 08:48:14,[Maintenance] Inlet lines clean
+2025-05-14 08:48:22,[Maintenance] valves ok
+2025-05-14 08:48:32,[Maintenance] VIA temperature OK
+2025-05-14 08:50:54,[Maintenance] CPC OK
+2025-05-14 08:51:42,[Maintenance] Orbi TIC at 18.2e6
+2025-05-14 08:51:56,[Maintenance] Orbi TIC var 7
+2025-05-14 08:52:17,[Maintenance] Orbi 61 and 121 dominant
+2025-05-14 08:52:29,[Maintenance] Corona working
+2025-05-14 08:52:43,[Maintenance] DMA OK
+2025-05-14 09:51:26,[Inlet] Changes to gasline_inletcorona_test. Sampling 100->150. dead time 400->0
+2025-05-14 09:51:37,[Inlet] Resetting the changed sequence
+2025-05-14 09:54:07,[Inlet] changes to gasline_inletcorona_test.csv. lowered 20lpm dead orbi makeup samling 600->300. increased 10-70nm time to 150->200
+2025-05-14 09:54:16,[Inlet] resetting sequence
+2025-05-14 13:28:37,[ORBI] TIC is 12.98e6
+2025-05-14 17:26:10,[ORBI] valve electronics came. Starting valve testing
+2025-05-14 17:26:28,[Inlet] Stopping sequence
+2025-05-14 17:27:19,[CPC] taking off the inlet
+2025-05-14 17:29:28,[ORBI] Mion flow to 2lpm
+2025-05-14 17:30:40,[ORBI] Removing MION inlet
+2025-05-14 21:41:39,[Inlet] Valve switching working
+2025-05-14 21:45:09,[CPC] Inlet back in
+2025-05-14 21:45:18,[ORBI] MION inlet back in
+2025-05-14 21:45:42,[Inlet] Sequence started
+2025-05-14 21:46:18,[ORBI] MION back to 20lpm
+2025-05-14 21:51:28,[ORBI] code update. restarting sequence
