@@ -48,3 +48,15 @@ Time,Note
 2025-05-14 09:51:37,[Inlet] Resetting the changed sequence
 2025-05-14 09:54:07,[Inlet] changes to gasline_inletcorona_test.csv. lowered 20lpm dead orbi makeup samling 600->300. increased 10-70nm time to 150->200
 2025-05-14 09:54:16,[Inlet] resetting sequence
+2025-05-14 13:28:37,[ORBI] TIC is 12.98e6
+2025-05-14 17:26:10,[ORBI] valve electronics came. Starting valve testing
+2025-05-14 17:26:28,[Inlet] Stopping sequence
+2025-05-14 17:27:19,[CPC] taking off the inlet
+2025-05-14 17:29:28,[ORBI] Mion flow to 2lpm
+2025-05-14 17:30:40,[ORBI] Removing MION inlet
+2025-05-14 21:41:39,[Inlet] Valve switching working
+2025-05-14 21:45:09,[CPC] Inlet back in
+2025-05-14 21:45:18,[ORBI] MION inlet back in
+2025-05-14 21:45:42,[Inlet] Sequence started
+2025-05-14 21:46:18,[ORBI] MION back to 20lpm
+2025-05-14 21:51:28,[ORBI] code update. restarting sequence

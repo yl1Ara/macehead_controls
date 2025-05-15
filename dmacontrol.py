@@ -14,6 +14,7 @@ from ttkbootstrap import Style
 from ttkbootstrap.constants import *
 from ttkbootstrap.widgets import Combobox, Button, Label, Frame, Entry
 from tkinter import filedialog
+from PyExpLabSys.drivers.tenma import Tenma722535
 
 
 def copy_to_dropbox_periodically(sync_info, interval=3600):
@@ -184,19 +185,19 @@ def toggle_corona_voltage(device_name, current_state):
 def toggle_valve(port, button):
     global valve_state
     try:
-        if port != "None":
-            with serial.Serial(port, 9600, timeout=1) as valve_serial:
+        with tenma(port) as tenma:
+            if port != "None":
                 if valve_state == "A":
-                    valve_serial.write(b"B")
+                    tenma.set_voltage(8)
                     valve_state = "B"
                     button.config(text="Valve B Open", bootstyle=SUCCESS)
                 else:
-                    valve_serial.write(b"A")
+                    tenma.set_voltage(0)
                     valve_state = "A"
                     button.config(text="Valve A Open", bootstyle=PRIMARY)
                 save_config(cpc_box.get(), mbed_box.get(), daq_box.get(), valve_box.get(), valve_state)
-        else:
-            terminal.insert(tk.END, "[Valve] No COM port selected.\n")
+            else:
+                terminal.insert(tk.END, "[Valve] No COM port selected.\n")
     except Exception as e:
         terminal.insert(tk.END, f"[Valve Error] {e}\n")
 
