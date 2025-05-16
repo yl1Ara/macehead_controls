@@ -78,3 +78,32 @@ Time,Note
 2025-05-15 08:05:11,[Maintenance] beginning valvetest.csv
 2025-05-15 08:09:02,[Maintenance] Valve test ok
 2025-05-15 08:09:35,[Inlet] gasline_inletcorona_test.csv started
+2025-05-15 10:49:00,[Inlet] Updated to code. Sequence reset
+2025-05-15 14:27:26,[Inlet] Testing total_test.csv
+2025-05-15 14:27:32,[Inlet] stopping sequence
+2025-05-15 14:27:50,[Inlet] starting total_test.csv
+2025-05-15 14:30:12,[ORBI] TIC at 28.23e6
+2025-05-15 14:33:21,[Inlet] VIA heat at 242
+2025-05-15 14:35:57,[Inlet] VIA heat at varies -2 when particle line open +2 when gas line from 240
+2025-05-15 14:37:55,[Inlet] Changed total.csv 22lpm sampling to 18lpm
+2025-05-15 14:38:55,[Inlet] Starting total.csv
+2025-05-15 16:14:08,[ORBI] 100.076 coming up on particle line
+2025-05-15 16:21:33,[Inlet] testing longer inlet tube for particle line to see the affects of pte rain cover
+2025-05-16 07:22:43,[Inlet] restart data acquisition to manage file size
+2025-05-16 08:12:15,[Maintenance] TeamViewer ok
+2025-05-16 08:14:00,[Maintenance] CPC butanol level 9.4
+2025-05-16 08:14:20,[Maintenance] CPC status ok
+2025-05-16 08:14:59,[Maintenance] nitric acid level 2.6
+2025-05-16 08:15:16,[Maintenance] nitrogen bottle pressure 170
+2025-05-16 08:15:35,[Maintenance] inlet lines clean
+2025-05-16 08:15:50,[Maintenance] Valves ok
+2025-05-16 08:16:06,[Maintenance] VIA ok
+2025-05-16 08:16:29,[Maintenance] ORBI TIC 28.63e6
+2025-05-16 08:16:45,[Maintenance] ORBI TIC var 5
+2025-05-16 08:17:17,[Maintenance] ORBI 61 and 121 are dominant
+2025-05-16 08:17:32,[Maintenance] CORONA ok
+2025-05-16 08:17:49,[Maintenance] DMA ok
+2025-05-16 08:17:58,[Maintenance] DMA sheath ok
+2025-05-16 08:22:59,[Maintenance] Testing pte plastic by putting longer inlet tubing past it
+2025-05-16 08:33:45,[Inlet] taking out the tubing
+2025-05-16 08:45:05,[Inlet] inserting tube back for longer test

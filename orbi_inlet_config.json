@@ -1,1 +1,1 @@
-{"cpc_port": "COM5", "mbed_port": "COM7", "daq_device": "Dev1", "valve_port": "COM12", "alicat_port": "COM6", "valve_state": "B", "particle_sizes": [0.0], "sheath_flow": 14.0, "save_interval": 5, "switch_interval": 600, "settle_delay": 0, "corona_voltage": 4800.0, "corona_enabled": false}
+{"cpc_port": "COM5", "mbed_port": "COM7", "daq_device": "Dev1", "valve_port": "COM12", "alicat_port": "COM6", "valve_state": "A", "particle_sizes": [0.0], "sheath_flow": 14.0, "save_interval": 5, "switch_interval": 600, "settle_delay": 0, "corona_voltage": 4800.0, "corona_enabled": false}
